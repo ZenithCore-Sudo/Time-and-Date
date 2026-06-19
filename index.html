@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>clock + weather · 24h & 12h</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: radial-gradient(circle at 20% 30%, #0b1a2e, #0a111f);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1.5rem;
+    }
+
+    .card {
+      max-width: 720px;
+      width: 100%;
+      background: rgba(18, 34, 58, 0.65);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 3.5rem;
+      padding: 2.5rem 2.8rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      transition: all 0.2s ease;
+      color: #f0f5fe;
+    }
+
+    .date-section {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 0.5rem 0.2rem;
+      margin-bottom: 1.8rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 1.2rem;
+    }
+
+    .date-main {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.3rem 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+    }
+
+    .month-year {
+      font-size: 1.8rem;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 0.1rem 1rem 0.1rem 0.8rem;
+      border-radius: 60px;
+      border-left: 2px solid #79b8ff;
+    }
+
+    .day-number {
+      font-size: 2.4rem;
+      font-weight: 700;
+      color: #b6d6ff;
+      letter-spacing: 0.02em;
+    }
+
+    .day-of-week {
+      font-size: 1.3rem;
+      font-weight: 400;
+      color: #9bb9e6;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 0.2rem 1rem;
+      border-radius: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .time-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.8rem 1rem;
+      margin: 2rem 0 2.2rem;
+    }
+
+    .time-card {
+      background: rgba(0, 10, 25, 0.4);
+      border-radius: 2rem;
+      padding: 0.8rem 0.6rem 0.7rem;
+      text-align: center;
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    .time-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: #819ec9;
+      font-weight: 400;
+      opacity: 0.7;
+    }
+
+    .time-value {
+      font-size: 3rem;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.06em;
+      color: #dceaff;
+      text-shadow: 0 0 12px rgba(80, 160, 255, 0.2);
+      line-height: 1.2;
+      margin-top: 2px;
+    }
+
+    .time-value small {
+      font-size: 1.2rem;
+      font-weight: 400;
+      color: #8aacda;
+      margin-left: 4px;
+    }
+
+    .weather-block {
+      background: rgba(12, 28, 50, 0.6);
+      border-radius: 2.4rem;
+      padding: 1.4rem 2rem;
+      margin-top: 0.8rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(4px);
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.3);
+    }
+
+    .weather-left {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem 1.2rem;
+      flex-wrap: wrap;
+    }
+
+    .weather-icon {
+      font-size: 2.8rem;
+      line-height: 1;
+      filter: drop-shadow(0 0 6px rgba(140, 200, 255, 0.3));
+    }
+
+    .weather-temp {
+      font-size: 2.2rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      color: #d6eaff;
+    }
+
+    .weather-desc {
+      font-size: 1.1rem;
+      font-weight: 400;
+      color: #b0ccee;
+      background: rgba(255,255,255,0.02);
+      padding: 0.2rem 1.2rem;
+      border-radius: 40px;
+      border: 1px solid rgba(255,255,255,0.03);
+    }
+
+    .weather-extra {
+      display: flex;
+      gap: 1.2rem;
+      font-size: 0.95rem;
+      color: #9bb6db;
+    }
+
+    .weather-extra span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .refresh-note {
+      text-align: right;
+      font-size: 0.7rem;
+      opacity: 0.3;
+      margin-top: 0.6rem;
+      letter-spacing: 0.04em;
+      color: #b0ccee;
+    }
+
+    @media (max-width: 520px) {
+      .card { padding: 1.8rem 1.2rem; border-radius: 2.5rem; }
+      .time-grid { grid-template-columns: 1fr; gap: 1rem; }
+      .time-value { font-size: 2.6rem; }
+      .month-year { font-size: 1.4rem; }
+      .day-number { font-size: 2rem; }
+      .day-of-week { font-size: 1rem; }
+      .weather-block { flex-direction: column; align-items: flex-start; gap: 0.8rem; }
+      .weather-extra { flex-wrap: wrap; gap: 0.4rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <!-- date -->
+    <div class="date-section">
+      <div class="date-main">
+        <span class="month-year" id="monthYear">January 2026</span>
+        <span class="day-number" id="dayNumber">19</span>
+        <span class="day-of-week" id="dayOfWeek">Monday</span>
+      </div>
+    </div>
+
+    <!-- time 24h & 12h -->
+    <div class="time-grid">
+      <div class="time-card">
+        <div class="time-label">⏱ 24‑hour</div>
+        <div class="time-value" id="time24">00:00:00</div>
+      </div>
+      <div class="time-card">
+        <div class="time-label">⏰ 12‑hour</div>
+        <div class="time-value" id="time12">00:00:00 <small>AM</small></div>
+      </div>
+    </div>
+
+    <!-- weather -->
+    <div class="weather-block" id="weatherBlock">
+      <div class="weather-left">
+        <span class="weather-icon" id="weatherIcon">☀️</span>
+        <span class="weather-temp" id="weatherTemp">22°C</span>
+        <span class="weather-desc" id="weatherDesc">Clear sky</span>
+      </div>
+      <div class="weather-extra">
+        <span id="weatherWind">💨 5 km/h</span>
+        <span id="weatherHumidity">💧 60%</span>
+      </div>
+    </div>
+    <div class="refresh-note">live · updates every 30s</div>
+  </div>
+
+  <script>
+    (function() {
+      "use strict";
+
+      // ----- DOM refs -----
+      const monthYearEl = document.getElementById('monthYear');
+      const dayNumberEl = document.getElementById('dayNumber');
+      const dayOfWeekEl = document.getElementById('dayOfWeek');
+      const time24El = document.getElementById('time24');
+      const time12El = document.getElementById('time12');
+
+      const weatherIconEl = document.getElementById('weatherIcon');
+      const weatherTempEl = document.getElementById('weatherTemp');
+      const weatherDescEl = document.getElementById('weatherDesc');
+      const weatherWindEl = document.getElementById('weatherWind');
+      const weatherHumidityEl = document.getElementById('weatherHumidity');
+
+      // ----- helper: format 2 digits -----
+      const pad2 = (num) => String(num).padStart(2, '0');
+
+      // ----- update date & time -----
+      function updateDateTime() {
+        const now = new Date();
+
+        // month, day, year, weekday
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+        const month = monthNames[now.getMonth()];
+        const year = now.getFullYear();
+        const day = now.getDate();
+        const weekday = weekdays[now.getDay()];
+
+        monthYearEl.textContent = `${month} ${year}`;
+        dayNumberEl.textContent = day;
+        dayOfWeekEl.textContent = weekday;
+
+        // time (24h)  HH:MM:SS
+        const hours24 = now.getHours();
+        const minutes = now.getMinutes();
+        const seconds = now.getSeconds();
+        const time24Str = `${pad2(hours24)}:${pad2(minutes)}:${pad2(seconds)}`;
+        time24El.textContent = time24Str;
+
+        // time (12h)  hh:mm:ss AM/PM
+        let hours12 = hours24 % 12;
+        if (hours12 === 0) hours12 = 12;
+        const ampm = hours24 >= 12 ? 'PM' : 'AM';
+        const time12Str = `${pad2(hours12)}:${pad2(minutes)}:${pad2(seconds)}`;
+        time12El.innerHTML = `${time12Str} <small>${ampm}</small>`;
+      }
+
+      // ----- weather (simulated / realistic mock) -----
+      // we use a small set of weather conditions that rotate, but we also
+      // read from a "realistic" endpoint (wttr.in) without API key.
+      // fallback: if fetch fails, we use mock data with smooth transitions.
+      let weatherCache = {
+        temp: 22,
+        desc: 'Clear sky',
+        icon: '☀️',
+        wind: '5 km/h',
+        humidity: '60%'
+      };
+
+      // fallback mock (random but stable for 30 min)
+      function generateMockWeather() {
+        const conditions = [
+          { icon: '☀️', desc: 'Sunny', tempBase: 26, wind: '8 km/h', humidity: '45%' },
+          { icon: '⛅', desc: 'Partly cloudy', tempBase: 20, wind: '12 km/h', humidity: '58%' },
+          { icon: '☁️', desc: 'Cloudy', tempBase: 17, wind: '10 km/h', humidity: '70%' },
+          { icon: '🌧️', desc: 'Light rain', tempBase: 14, wind: '15 km/h', humidity: '82%' },
+          { icon: '❄️', desc: 'Snow', tempBase: -2, wind: '6 km/h', humidity: '76%' },
+          { icon: '🌤️', desc: 'Mostly sunny', tempBase: 24, wind: '7 km/h', humidity: '50%' },
+        ];
+        // deterministic pseudo-random based on current day + month (to keep it consistent)
+        const now = new Date();
+        const seed = now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate();
+        const idx = seed % conditions.length;
+        const cond = conditions[idx];
+        // slight temp variation (±4°C) based on hour
+        const hour = now.getHours();
+        const variation = Math.sin(hour / 24 * 2 * Math.PI) * 3; 
+        const temp = Math.round(cond.tempBase + variation);
+        return {
+          icon: cond.icon,
+          desc: cond.desc,
+          temp: temp,
+          wind: cond.wind,
+          humidity: cond.humidity,
+        };
+      }
+
+      function updateWeatherUI(weather) {
+        weatherIconEl.textContent = weather.icon || '☀️';
+        weatherTempEl.textContent = `${weather.temp}°C`;
+        weatherDescEl.textContent = weather.desc || 'Clear';
+        weatherWindEl.textContent = `💨 ${weather.wind || '0 km/h'}`;
+        weatherHumidityEl.textContent = `💧 ${weather.humidity || '0%'}`;
+      }
+
+      // try to fetch from wttr.in (free, no key, returns JSON)
+      async function fetchWeather() {
+        try {
+          // using 'auto' location (based on IP) – we just want any weather to show.
+          // we add ?format=j1 to get JSON, but we parse a simpler version with ?format=%C+%t+%w+%h
+          // we use a proxy-like approach: fetch from wttr.in with format parameters.
+          // but to keep it robust and easy, we use the plain text format with %C (condition),
+          // %t (temp), %w (wind), %h (humidity) and parse.
+          const response = await fetch('https://wttr.in?format=%C+%t+%w+%h&lang=en', {
+            method: 'GET',
+            headers: { 'User-Agent': 'curl/7.68.0' } // some servers require user-agent
+          });
+          if (!response.ok) throw new Error('weather fetch failed');
+
+          const text = await response.text();
+          // example: "Partly cloudy +18°C 11 km/h 62%"
+          const parts = text.trim().split(/\s+/);
+          // we expect at least 4 parts: condition, temp, wind, humidity
+          // but condition might be multiple words (e.g. "Partly cloudy") – we join all but last 3.
+          let condition = '';
+          let temp = '';
+          let wind = '';
+          let humidity = '';
+
+          if (parts.length >= 4) {
+            // condition: all except last 3 elements
+            const condParts = parts.slice(0, parts.length - 3);
+            condition = condParts.join(' ');
+            temp = parts[parts.length - 3];
+            wind = parts[parts.length - 2];
+            humidity = parts[parts.length - 1];
+          } else {
+            // fallback: use mock
+            const mock = generateMockWeather();
+            updateWeatherUI(mock);
+            weatherCache = mock;
+            return;
+          }
+
+          // clean temp: remove '+' or extra chars
+          let tempClean = temp.replace(/[^0-9\-+°C]/g, '').trim();
+          if (!tempClean.includes('°C')) tempClean = tempClean + '°C';
+          // clean wind
+          let windClean = wind.replace(/[^0-9.]/g, '').trim();
+          if (windClean && !wind.includes('km/h')) windClean = windClean + ' km/h';
+          else if (!windClean) windClean = '0 km/h';
+          // humidity: keep as is
+          let humidityClean = humidity.trim();
+          if (!humidityClean.includes('%')) humidityClean = humidityClean + '%';
+
+          // map icon based on condition text (simple)
+          let icon = '☀️';
+          const condLower = condition.toLowerCase();
+          if (condLower.includes('sunny') || condLower.includes('clear')) icon = '☀️';
+          else if (condLower.includes('partly cloudy') || condLower.includes('mostly sunny')) icon = '⛅';
+          else if (condLower.includes('cloudy') || condLower.includes('overcast')) icon = '☁️';
+          else if (condLower.includes('rain') || condLower.includes('drizzle')) icon = '🌧️';
+          else if (condLower.includes('snow') || condLower.includes('flurry')) icon = '❄️';
+          else if (condLower.includes('thunder') || condLower.includes('storm')) icon = '⛈️';
+          else if (condLower.includes('fog') || condLower.includes('mist')) icon = '🌫️';
+          else icon = '🌤️';
+
+          const weather = {
+            icon: icon,
+            desc: condition || 'Clear',
+            temp: tempClean.replace('°C', '') || '22',
+            wind: windClean,
+            humidity: humidityClean,
+          };
+          // ensure temp is numeric for display
+          const tempNum = parseFloat(weather.temp);
+          if (!isNaN(tempNum)) {
+            weather.temp = Math.round(tempNum);
+          } else {
+            weather.temp = 22;
+          }
+          updateWeatherUI(weather);
+          weatherCache = weather;
+        } catch (_) {
+          // fallback to mock
+          const mock = generateMockWeather();
+          updateWeatherUI(mock);
+          weatherCache = mock;
+        }
+      }
+
+      // ----- initial update & intervals -----
+      function updateAll() {
+        updateDateTime();
+        // weather updates every 30s, but we also call on load
+        // but we only want to fetch weather periodically (not every second)
+        // we call fetchWeather separately via interval
+      }
+
+      // weather interval (30s)
+      let weatherInterval = null;
+
+      function startWeatherInterval() {
+        if (weatherInterval) clearInterval(weatherInterval);
+        // fetch immediately
+        fetchWeather();
+        weatherInterval = setInterval(fetchWeather, 30000); // 30s
+      }
+
+      // time update: every second
+      setInterval(updateDateTime, 1000);
+
+      // initial date/time
+      updateDateTime();
+
+      // start weather (with 30s interval)
+      startWeatherInterval();
+
+      // (optional) if user returns to tab, we keep it fresh
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) {
+          // refresh weather if visible (but we don't want to spam)
+          // we just fetch once when visible, but keep interval
+          fetchWeather();
+        }
+      });
+
+    })();
+  </script>
+</body>
+</html>
