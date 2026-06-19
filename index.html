@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>midnight · time & date</title>
   <style>
     * {
@@ -95,7 +95,7 @@
       background: rgba(255, 255, 255, 0.01);
       padding: 0.4rem 1.2rem;
       border-radius: 60px;
-      margin-bottom: 2rem;
+      margin-bottom: 1.2rem;
       font-family: 'Inter', 'SF Mono', 'Fira Code', monospace;
     }
 
@@ -104,7 +104,6 @@
       font-weight: 300;
       letter-spacing: 0.3em;
       color: #5f6f8a;
-      margin-top: -0.2rem;
       text-transform: uppercase;
       background: rgba(255, 255, 255, 0.02);
       padding: 0.2rem 1.8rem;
@@ -126,66 +125,6 @@
       border: 1px solid rgba(255, 255, 255, 0.02);
     }
 
-    /* ---- weather (optional, clean) ---- */
-    .weather-block {
-      margin-top: 2.8rem;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: center;
-      gap: 0.8rem 2rem;
-      background: rgba(255, 255, 255, 0.02);
-      padding: 0.6rem 2rem;
-      border-radius: 80px;
-      border: 1px solid rgba(255, 255, 255, 0.02);
-      backdrop-filter: blur(4px);
-      font-weight: 300;
-      color: #b8cae8;
-    }
-
-    .weather-icon {
-      font-size: 2rem;
-      line-height: 1;
-      filter: drop-shadow(0 0 4px rgba(160, 200, 255, 0.1));
-    }
-
-    .weather-temp {
-      font-size: 1.6rem;
-      font-weight: 400;
-      color: #dce6fc;
-      letter-spacing: 0.02em;
-    }
-
-    .weather-desc {
-      font-size: 1.1rem;
-      font-weight: 300;
-      color: #a2b7da;
-      background: rgba(255, 255, 255, 0.02);
-      padding: 0.1rem 1.2rem;
-      border-radius: 40px;
-    }
-
-    .weather-extra {
-      display: flex;
-      gap: 1.5rem;
-      font-size: 0.9rem;
-      color: #869bbf;
-    }
-
-    .weather-extra span {
-      display: flex;
-      align-items: center;
-      gap: 0.2rem;
-    }
-
-    .refresh-note {
-      font-size: 0.6rem;
-      opacity: 0.15;
-      margin-top: 1.2rem;
-      letter-spacing: 0.2em;
-      color: #b0c4e5;
-    }
-
     /* responsive */
     @media (max-width: 650px) {
       .date-item { font-size: 1.4rem; }
@@ -193,8 +132,6 @@
       .date-sep { font-size: 1.2rem; }
       .time-main { font-size: 5.8rem; letter-spacing: 0.04em; }
       .date-row { gap: 0.2rem 0.8rem; padding: 0.5rem 1.2rem; }
-      .weather-block { flex-direction: column; align-items: center; gap: 0.3rem; padding: 0.8rem 1.2rem; }
-      .weather-extra { flex-wrap: wrap; justify-content: center; gap: 0.4rem 1.2rem; }
     }
 
     @media (max-width: 430px) {
@@ -221,20 +158,9 @@
     <div class="time-main" id="time24">00:00:00</div>
     <div class="time-24-label">24‑hour</div>
 
-    <!-- small 12h hint (optional, but shows both formats) -->
+    <!-- small 12h hint (optional, shows both formats) -->
     <div class="time-12-helper" id="time12helper">⏱ 12h · 00:00:00 AM</div>
 
-    <!-- weather block -->
-    <div class="weather-block" id="weatherBlock">
-      <span class="weather-icon" id="weatherIcon">☀️</span>
-      <span class="weather-temp" id="weatherTemp">22°C</span>
-      <span class="weather-desc" id="weatherDesc">clear sky</span>
-      <div class="weather-extra">
-        <span id="weatherWind">💨 5 km/h</span>
-        <span id="weatherHumidity">💧 60%</span>
-      </div>
-    </div>
-    <div class="refresh-note">live · updates every 30s</div>
   </div>
 
   <script>
@@ -247,12 +173,6 @@
       const dayOfWeekEl = document.getElementById('dayOfWeek');
       const time24El = document.getElementById('time24');
       const time12helper = document.getElementById('time12helper');
-
-      const weatherIconEl = document.getElementById('weatherIcon');
-      const weatherTempEl = document.getElementById('weatherTemp');
-      const weatherDescEl = document.getElementById('weatherDesc');
-      const weatherWindEl = document.getElementById('weatherWind');
-      const weatherHumidityEl = document.getElementById('weatherHumidity');
 
       // helpers
       const pad2 = (num) => String(num).padStart(2, '0');
@@ -288,117 +208,9 @@
         time12helper.textContent = `⏱ 12h · ${time12Str}`;
       }
 
-      // weather mock + fetch
-      function generateMockWeather() {
-        const conditions = [
-          { icon: '☀️', desc: 'Sunny', tempBase: 26, wind: '8 km/h', humidity: '45%' },
-          { icon: '⛅', desc: 'Partly cloudy', tempBase: 20, wind: '12 km/h', humidity: '58%' },
-          { icon: '☁️', desc: 'Cloudy', tempBase: 17, wind: '10 km/h', humidity: '70%' },
-          { icon: '🌧️', desc: 'Light rain', tempBase: 14, wind: '15 km/h', humidity: '82%' },
-          { icon: '❄️', desc: 'Snow', tempBase: -2, wind: '6 km/h', humidity: '76%' },
-          { icon: '🌤️', desc: 'Mostly sunny', tempBase: 24, wind: '7 km/h', humidity: '50%' },
-        ];
-        const now = new Date();
-        const seed = now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate();
-        const idx = seed % conditions.length;
-        const cond = conditions[idx];
-        const hour = now.getHours();
-        const variation = Math.sin(hour / 24 * 2 * Math.PI) * 3;
-        const temp = Math.round(cond.tempBase + variation);
-        return {
-          icon: cond.icon,
-          desc: cond.desc,
-          temp: temp,
-          wind: cond.wind,
-          humidity: cond.humidity,
-        };
-      }
-
-      function updateWeatherUI(weather) {
-        weatherIconEl.textContent = weather.icon || '☀️';
-        weatherTempEl.textContent = `${weather.temp}°C`;
-        weatherDescEl.textContent = weather.desc || 'Clear';
-        weatherWindEl.textContent = `💨 ${weather.wind || '0 km/h'}`;
-        weatherHumidityEl.textContent = `💧 ${weather.humidity || '0%'}`;
-      }
-
-      async function fetchWeather() {
-        try {
-          const response = await fetch('https://wttr.in?format=%C+%t+%w+%h&lang=en', {
-            method: 'GET',
-            headers: { 'User-Agent': 'curl/7.68.0' }
-          });
-          if (!response.ok) throw new Error('weather fetch failed');
-
-          const text = await response.text();
-          const parts = text.trim().split(/\s+/);
-          let condition = '', temp = '', wind = '', humidity = '';
-
-          if (parts.length >= 4) {
-            const condParts = parts.slice(0, parts.length - 3);
-            condition = condParts.join(' ');
-            temp = parts[parts.length - 3];
-            wind = parts[parts.length - 2];
-            humidity = parts[parts.length - 1];
-          } else {
-            const mock = generateMockWeather();
-            updateWeatherUI(mock);
-            return;
-          }
-
-          let tempClean = temp.replace(/[^0-9\-+°C]/g, '').trim();
-          if (!tempClean.includes('°C')) tempClean = tempClean + '°C';
-          let windClean = wind.replace(/[^0-9.]/g, '').trim();
-          if (windClean && !wind.includes('km/h')) windClean = windClean + ' km/h';
-          else if (!windClean) windClean = '0 km/h';
-          let humidityClean = humidity.trim();
-          if (!humidityClean.includes('%')) humidityClean = humidityClean + '%';
-
-          let icon = '☀️';
-          const condLower = condition.toLowerCase();
-          if (condLower.includes('sunny') || condLower.includes('clear')) icon = '☀️';
-          else if (condLower.includes('partly cloudy') || condLower.includes('mostly sunny')) icon = '⛅';
-          else if (condLower.includes('cloudy') || condLower.includes('overcast')) icon = '☁️';
-          else if (condLower.includes('rain') || condLower.includes('drizzle')) icon = '🌧️';
-          else if (condLower.includes('snow') || condLower.includes('flurry')) icon = '❄️';
-          else if (condLower.includes('thunder') || condLower.includes('storm')) icon = '⛈️';
-          else if (condLower.includes('fog') || condLower.includes('mist')) icon = '🌫️';
-          else icon = '🌤️';
-
-          const weather = {
-            icon: icon,
-            desc: condition || 'Clear',
-            temp: tempClean.replace('°C', '') || '22',
-            wind: windClean,
-            humidity: humidityClean,
-          };
-          const tempNum = parseFloat(weather.temp);
-          if (!isNaN(tempNum)) {
-            weather.temp = Math.round(tempNum);
-          } else {
-            weather.temp = 22;
-          }
-          updateWeatherUI(weather);
-        } catch (_) {
-          const mock = generateMockWeather();
-          updateWeatherUI(mock);
-        }
-      }
-
       // ---- init ----
       updateDateTime();
       setInterval(updateDateTime, 1000);
-
-      // weather: fetch now, then every 30s
-      fetchWeather();
-      setInterval(fetchWeather, 30000);
-
-      // if tab becomes visible again, refresh weather
-      document.addEventListener('visibilitychange', () => {
-        if (!document.hidden) {
-          fetchWeather();
-        }
-      });
 
     })();
   </script>
