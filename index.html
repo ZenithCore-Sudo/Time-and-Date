@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>time · moon · sunset · progress</title>
+  <title>Time · Moon · Sunset · Progress</title>
   <style>
     * {
       margin: 0;
@@ -34,7 +34,6 @@
       min-height: 80vh;
     }
 
-    /* ---- date row (top) ---- */
     .date-row {
       font-weight: 400;
       letter-spacing: 0.04em;
@@ -85,7 +84,6 @@
       color: #d3def5;
     }
 
-    /* ---- time (middle) ---- */
     .time-main {
       font-size: 9.5rem;
       font-weight: 600;
@@ -126,7 +124,6 @@
       border: 1px solid rgba(255, 255, 255, 0.02);
     }
 
-    /* ---- bottom grid: 3 columns ---- */
     .bottom-grid {
       margin-top: 3.5rem;
       width: 100%;
@@ -136,7 +133,6 @@
       align-items: stretch;
     }
 
-    /* bottom left: sunset */
     .sunset-card {
       background: rgba(255, 255, 255, 0.02);
       border: 1px solid rgba(255, 255, 255, 0.03);
@@ -173,7 +169,6 @@
       margin-top: 0.1rem;
     }
 
-    /* bottom middle: progress bars */
     .progress-card {
       background: rgba(255, 255, 255, 0.02);
       border: 1px solid rgba(255, 255, 255, 0.03);
@@ -221,7 +216,6 @@
       background: linear-gradient(90deg, #9f7aff, #d4bfff);
     }
 
-    /* bottom right: moon phase */
     .moon-card {
       background: rgba(255, 255, 255, 0.02);
       border: 1px solid rgba(255, 255, 255, 0.03);
@@ -254,7 +248,6 @@
       font-weight: 300;
     }
 
-    /* responsive */
     @media (max-width: 750px) {
       .bottom-grid {
         grid-template-columns: 1fr;
@@ -281,7 +274,6 @@
 <body>
   <div class="container">
 
-    <!-- date row -->
     <div class="date-row">
       <span class="date-item month-year" id="monthYear">January 2026</span>
       <span class="date-sep">·</span>
@@ -290,21 +282,17 @@
       <span class="date-item weekday" id="dayOfWeek">Monday</span>
     </div>
 
-    <!-- time -->
     <div class="time-main" id="time24">00:00:00</div>
     <div class="time-24-label">24‑hour</div>
     <div class="time-12-helper" id="time12helper">⏱ 12h · 00:00:00 AM</div>
 
-    <!-- bottom grid -->
     <div class="bottom-grid">
-      <!-- left: sunset duration -->
       <div class="sunset-card">
         <div class="sunset-label">☀️ sunset duration</div>
         <div class="sunset-value" id="sunsetDuration">--:--</div>
         <div class="sunset-sub" id="sunsetSub">daylight</div>
       </div>
 
-      <!-- middle: day + week progress -->
       <div class="progress-card">
         <div class="progress-item">
           <div class="progress-header">
@@ -326,7 +314,6 @@
         </div>
       </div>
 
-      <!-- right: moon phase -->
       <div class="moon-card">
         <div class="moon-icon" id="moonIcon">🌕</div>
         <div class="moon-phase-name" id="moonPhaseName">Full Moon</div>
@@ -340,7 +327,6 @@
     (function() {
       "use strict";
 
-      // DOM refs
       const monthYearEl = document.getElementById('monthYear');
       const dayNumberEl = document.getElementById('dayNumber');
       const dayOfWeekEl = document.getElementById('dayOfWeek');
@@ -359,17 +345,14 @@
       const moonPhaseNameEl = document.getElementById('moonPhaseName');
       const moonIlluminationEl = document.getElementById('moonIllumination');
 
-      // helpers
       const pad2 = (num) => String(num).padStart(2, '0');
 
-      // ----- moon phase calculation (astronomical) -----
       function getMoonPhase(date) {
-        // based on known new moon reference: 2000-01-06 18:14 UTC
         const ref = new Date(Date.UTC(2000, 0, 6, 18, 14));
-        const diff = (date.getTime() - ref.getTime()) / 1000; // seconds
+        const diff = (date.getTime() - ref.getTime()) / 1000;
         const days = diff / 86400;
         const lunarCycle = 29.53058867;
-        const phase = (days % lunarCycle) / lunarCycle; // 0 = new moon, 0.5 = full moon
+        const phase = (days % lunarCycle) / lunarCycle;
         return phase;
       }
 
@@ -378,7 +361,7 @@
         const illumination = Math.round((1 - Math.cos(phase * 2 * Math.PI)) / 2 * 100);
         let name = '';
         let icon = '';
-        // 8 phases
+
         const p = phase;
         if (p < 0.0625 || p >= 0.9375) { name = 'New Moon'; icon = '🌑'; }
         else if (p >= 0.0625 && p < 0.1875) { name = 'Waxing Crescent'; icon = '🌒'; }
@@ -391,12 +374,10 @@
         return { name, icon, illumination };
       }
 
-      // ----- sunset duration (mock, based on latitude) -----
-      // we approximate using day of year and latitude (e.g. 40°N)
       function getSunsetDuration(date) {
-        const lat = 40.0; // approx NYC / mid-latitude
+        const lat = 40.0;
         const doy = Math.floor((date - new Date(date.getFullYear(), 0, 0)) / 86400000);
-        // simple sine model: daylight hours between 9h (winter) and 15h (summer)
+    
         const declination = 23.44 * Math.sin((doy - 81) * (2 * Math.PI / 365));
         const latRad = lat * Math.PI / 180;
         const decRad = declination * Math.PI / 180;
@@ -406,41 +387,36 @@
           const hourAngle = Math.acos(cosHourAngle);
           dayLength = 2 * hourAngle * (180 / Math.PI) / 15;
         } else if (cosHourAngle <= -1) {
-          dayLength = 24; // polar day
+          dayLength = 24;
         } else {
-          dayLength = 0; // polar night
+          dayLength = 0;
         }
-        // sunset duration = dayLength / 2 (hours from sunrise to sunset)
+   
         const sunsetHours = dayLength / 2;
         const hours = Math.floor(sunsetHours);
         const minutes = Math.round((sunsetHours - hours) * 60);
         return { hours, minutes, dayLength };
       }
 
-      // ----- update all -----
       function updateAll() {
         const now = new Date();
 
-        // date
         const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
         const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         monthYearEl.textContent = `${monthNames[now.getMonth()]} ${now.getFullYear()}`;
         dayNumberEl.textContent = now.getDate();
         dayOfWeekEl.textContent = weekdays[now.getDay()];
 
-        // time 24h
         const h24 = now.getHours();
         const min = now.getMinutes();
         const sec = now.getSeconds();
         time24El.textContent = `${pad2(h24)}:${pad2(min)}:${pad2(sec)}`;
 
-        // 12h helper
         let h12 = h24 % 12;
         if (h12 === 0) h12 = 12;
         const ampm = h24 >= 12 ? 'PM' : 'AM';
         time12helper.textContent = `⏱ 12h · ${pad2(h12)}:${pad2(min)}:${pad2(sec)} ${ampm}`;
 
-        // ---- sunset duration ----
         const sunset = getSunsetDuration(now);
         const hh = String(sunset.hours).padStart(2, '0');
         const mm = String(sunset.minutes).padStart(2, '0');
@@ -448,7 +424,6 @@
         const totalDaylight = sunset.dayLength.toFixed(1);
         sunsetSubEl.textContent = `${totalDaylight}h daylight`;
 
-        // ---- day progress ----
         const startOfDay = new Date(now);
         startOfDay.setHours(0, 0, 0, 0);
         const endOfDay = new Date(now);
@@ -459,9 +434,8 @@
         dayPercentEl.textContent = `${Math.round(dayPct)}%`;
         dayFillEl.style.width = `${dayPct}%`;
 
-        // ---- week progress (Monday = 0) ----
-        const dayOfWeek = now.getDay(); // 0=Sunday
-        const mondayOffset = (dayOfWeek === 0) ? 6 : dayOfWeek - 1; // days since Monday
+        const dayOfWeek = now.getDay();
+        const mondayOffset = (dayOfWeek === 0) ? 6 : dayOfWeek - 1;
         const startOfWeek = new Date(now);
         startOfWeek.setDate(now.getDate() - mondayOffset);
         startOfWeek.setHours(0, 0, 0, 0);
@@ -475,18 +449,15 @@
         weekPercentEl.textContent = `${Math.round(weekPct)}%`;
         weekFillEl.style.width = `${weekPct}%`;
 
-        // ---- moon phase ----
         const moon = getMoonInfo(now);
         moonIconEl.textContent = moon.icon;
         moonPhaseNameEl.textContent = moon.name;
         moonIlluminationEl.textContent = `${moon.illumination}% illuminated`;
       }
 
-      // initial + interval
       updateAll();
       setInterval(updateAll, 1000);
 
-      // re-run on visibility change to keep fresh
       document.addEventListener('visibilitychange', () => {
         if (!document.hidden) {
           updateAll();
