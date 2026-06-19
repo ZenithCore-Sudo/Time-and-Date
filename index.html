@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>midnight · time & date</title>
+  <title>time · moon · sunset · progress</title>
   <style>
     * {
       margin: 0;
@@ -23,20 +23,22 @@
     }
 
     .container {
-      max-width: 900px;
+      max-width: 1000px;
       width: 100%;
       text-align: center;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      position: relative;
+      min-height: 80vh;
     }
 
     /* ---- date row (top) ---- */
     .date-row {
       font-weight: 400;
       letter-spacing: 0.04em;
-      margin-bottom: 3.5rem;
+      margin-bottom: 3rem;
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
@@ -95,7 +97,7 @@
       background: rgba(255, 255, 255, 0.01);
       padding: 0.4rem 1.2rem;
       border-radius: 60px;
-      margin-bottom: 1.2rem;
+      margin-bottom: 0.8rem;
       font-family: 'Inter', 'SF Mono', 'Fira Code', monospace;
     }
 
@@ -112,7 +114,6 @@
       display: inline-block;
     }
 
-    /* optional 12h helper (tiny, subtle) */
     .time-12-helper {
       margin-top: 0.8rem;
       font-size: 0.9rem;
@@ -125,28 +126,163 @@
       border: 1px solid rgba(255, 255, 255, 0.02);
     }
 
+    /* ---- bottom grid: 3 columns ---- */
+    .bottom-grid {
+      margin-top: 3.5rem;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1.8fr 1fr;
+      gap: 1.5rem;
+      align-items: stretch;
+    }
+
+    /* bottom left: sunset */
+    .sunset-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      border-radius: 28px;
+      padding: 1.2rem 0.8rem;
+      backdrop-filter: blur(2px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.2rem;
+    }
+
+    .sunset-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: #6a7b98;
+      font-weight: 300;
+    }
+
+    .sunset-value {
+      font-size: 2rem;
+      font-weight: 500;
+      color: #e8eefb;
+      letter-spacing: 0.02em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .sunset-sub {
+      font-size: 0.75rem;
+      color: #6f82a0;
+      font-weight: 300;
+      margin-top: 0.1rem;
+    }
+
+    /* bottom middle: progress bars */
+    .progress-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      border-radius: 28px;
+      padding: 1.2rem 1.5rem;
+      backdrop-filter: blur(2px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 1.2rem;
+    }
+
+    .progress-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      font-weight: 300;
+      color: #a0b2d0;
+      letter-spacing: 0.04em;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #6f9eff, #b6d0ff);
+      border-radius: 12px;
+      transition: width 0.3s ease;
+    }
+
+    .progress-bar-fill.week {
+      background: linear-gradient(90deg, #9f7aff, #d4bfff);
+    }
+
+    /* bottom right: moon phase */
+    .moon-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      border-radius: 28px;
+      padding: 1.2rem 0.8rem;
+      backdrop-filter: blur(2px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.1rem;
+    }
+
+    .moon-icon {
+      font-size: 3.2rem;
+      line-height: 1;
+      filter: drop-shadow(0 0 6px rgba(200, 220, 255, 0.08));
+    }
+
+    .moon-phase-name {
+      font-size: 1rem;
+      font-weight: 400;
+      color: #d2def5;
+      letter-spacing: 0.02em;
+    }
+
+    .moon-illumination {
+      font-size: 0.7rem;
+      color: #7a8dac;
+      font-weight: 300;
+    }
+
     /* responsive */
-    @media (max-width: 650px) {
+    @media (max-width: 750px) {
+      .bottom-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        margin-top: 2.5rem;
+      }
+      .time-main { font-size: 6.5rem; }
       .date-item { font-size: 1.4rem; }
       .date-item.weekday { font-size: 1.2rem; }
       .date-sep { font-size: 1.2rem; }
-      .time-main { font-size: 5.8rem; letter-spacing: 0.04em; }
       .date-row { gap: 0.2rem 0.8rem; padding: 0.5rem 1.2rem; }
+      .sunset-value { font-size: 1.8rem; }
     }
 
-    @media (max-width: 430px) {
+    @media (max-width: 480px) {
       .time-main { font-size: 4.2rem; }
       .date-item { font-size: 1.1rem; }
       .date-item.weekday { font-size: 1rem; }
       .date-sep { font-size: 1rem; }
+      .moon-icon { font-size: 2.6rem; }
     }
   </style>
 </head>
 <body>
   <div class="container">
 
-    <!-- date row: Month, Day, Year, Day of Week -->
-    <div class="date-row" id="dateRow">
+    <!-- date row -->
+    <div class="date-row">
       <span class="date-item month-year" id="monthYear">January 2026</span>
       <span class="date-sep">·</span>
       <span class="date-item day" id="dayNumber">19</span>
@@ -154,12 +290,49 @@
       <span class="date-item weekday" id="dayOfWeek">Monday</span>
     </div>
 
-    <!-- time: 24h 00:00:00 -->
+    <!-- time -->
     <div class="time-main" id="time24">00:00:00</div>
     <div class="time-24-label">24‑hour</div>
-
-    <!-- small 12h hint (optional, shows both formats) -->
     <div class="time-12-helper" id="time12helper">⏱ 12h · 00:00:00 AM</div>
+
+    <!-- bottom grid -->
+    <div class="bottom-grid">
+      <!-- left: sunset duration -->
+      <div class="sunset-card">
+        <div class="sunset-label">☀️ sunset duration</div>
+        <div class="sunset-value" id="sunsetDuration">--:--</div>
+        <div class="sunset-sub" id="sunsetSub">daylight</div>
+      </div>
+
+      <!-- middle: day + week progress -->
+      <div class="progress-card">
+        <div class="progress-item">
+          <div class="progress-header">
+            <span>day progress</span>
+            <span id="dayPercent">0%</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="dayFill" style="width:0%;"></div>
+          </div>
+        </div>
+        <div class="progress-item">
+          <div class="progress-header">
+            <span>week progress</span>
+            <span id="weekPercent">0%</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill week" id="weekFill" style="width:0%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- right: moon phase -->
+      <div class="moon-card">
+        <div class="moon-icon" id="moonIcon">🌕</div>
+        <div class="moon-phase-name" id="moonPhaseName">Full Moon</div>
+        <div class="moon-illumination" id="moonIllumination">100% illuminated</div>
+      </div>
+    </div>
 
   </div>
 
@@ -174,43 +347,151 @@
       const time24El = document.getElementById('time24');
       const time12helper = document.getElementById('time12helper');
 
+      const sunsetDurationEl = document.getElementById('sunsetDuration');
+      const sunsetSubEl = document.getElementById('sunsetSub');
+
+      const dayPercentEl = document.getElementById('dayPercent');
+      const dayFillEl = document.getElementById('dayFill');
+      const weekPercentEl = document.getElementById('weekPercent');
+      const weekFillEl = document.getElementById('weekFill');
+
+      const moonIconEl = document.getElementById('moonIcon');
+      const moonPhaseNameEl = document.getElementById('moonPhaseName');
+      const moonIlluminationEl = document.getElementById('moonIllumination');
+
       // helpers
       const pad2 = (num) => String(num).padStart(2, '0');
 
-      // update date + time
-      function updateDateTime() {
+      // ----- moon phase calculation (astronomical) -----
+      function getMoonPhase(date) {
+        // based on known new moon reference: 2000-01-06 18:14 UTC
+        const ref = new Date(Date.UTC(2000, 0, 6, 18, 14));
+        const diff = (date.getTime() - ref.getTime()) / 1000; // seconds
+        const days = diff / 86400;
+        const lunarCycle = 29.53058867;
+        const phase = (days % lunarCycle) / lunarCycle; // 0 = new moon, 0.5 = full moon
+        return phase;
+      }
+
+      function getMoonInfo(date) {
+        const phase = getMoonPhase(date);
+        const illumination = Math.round((1 - Math.cos(phase * 2 * Math.PI)) / 2 * 100);
+        let name = '';
+        let icon = '';
+        // 8 phases
+        const p = phase;
+        if (p < 0.0625 || p >= 0.9375) { name = 'New Moon'; icon = '🌑'; }
+        else if (p >= 0.0625 && p < 0.1875) { name = 'Waxing Crescent'; icon = '🌒'; }
+        else if (p >= 0.1875 && p < 0.3125) { name = 'First Quarter'; icon = '🌓'; }
+        else if (p >= 0.3125 && p < 0.4375) { name = 'Waxing Gibbous'; icon = '🌔'; }
+        else if (p >= 0.4375 && p < 0.5625) { name = 'Full Moon'; icon = '🌕'; }
+        else if (p >= 0.5625 && p < 0.6875) { name = 'Waning Gibbous'; icon = '🌖'; }
+        else if (p >= 0.6875 && p < 0.8125) { name = 'Last Quarter'; icon = '🌗'; }
+        else if (p >= 0.8125 && p < 0.9375) { name = 'Waning Crescent'; icon = '🌘'; }
+        return { name, icon, illumination };
+      }
+
+      // ----- sunset duration (mock, based on latitude) -----
+      // we approximate using day of year and latitude (e.g. 40°N)
+      function getSunsetDuration(date) {
+        const lat = 40.0; // approx NYC / mid-latitude
+        const doy = Math.floor((date - new Date(date.getFullYear(), 0, 0)) / 86400000);
+        // simple sine model: daylight hours between 9h (winter) and 15h (summer)
+        const declination = 23.44 * Math.sin((doy - 81) * (2 * Math.PI / 365));
+        const latRad = lat * Math.PI / 180;
+        const decRad = declination * Math.PI / 180;
+        const cosHourAngle = -Math.tan(latRad) * Math.tan(decRad);
+        let dayLength = 12;
+        if (cosHourAngle > -1 && cosHourAngle < 1) {
+          const hourAngle = Math.acos(cosHourAngle);
+          dayLength = 2 * hourAngle * (180 / Math.PI) / 15;
+        } else if (cosHourAngle <= -1) {
+          dayLength = 24; // polar day
+        } else {
+          dayLength = 0; // polar night
+        }
+        // sunset duration = dayLength / 2 (hours from sunrise to sunset)
+        const sunsetHours = dayLength / 2;
+        const hours = Math.floor(sunsetHours);
+        const minutes = Math.round((sunsetHours - hours) * 60);
+        return { hours, minutes, dayLength };
+      }
+
+      // ----- update all -----
+      function updateAll() {
         const now = new Date();
 
+        // date
         const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
         const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        monthYearEl.textContent = `${monthNames[now.getMonth()]} ${now.getFullYear()}`;
+        dayNumberEl.textContent = now.getDate();
+        dayOfWeekEl.textContent = weekdays[now.getDay()];
 
-        const month = monthNames[now.getMonth()];
-        const year = now.getFullYear();
-        const day = now.getDate();
-        const weekday = weekdays[now.getDay()];
-
-        monthYearEl.textContent = `${month} ${year}`;
-        dayNumberEl.textContent = day;
-        dayOfWeekEl.textContent = weekday;
-
-        // 24h time: HH:MM:SS
+        // time 24h
         const h24 = now.getHours();
         const min = now.getMinutes();
         const sec = now.getSeconds();
-        const time24Str = `${pad2(h24)}:${pad2(min)}:${pad2(sec)}`;
-        time24El.textContent = time24Str;
+        time24El.textContent = `${pad2(h24)}:${pad2(min)}:${pad2(sec)}`;
 
-        // 12h helper (optional)
+        // 12h helper
         let h12 = h24 % 12;
         if (h12 === 0) h12 = 12;
         const ampm = h24 >= 12 ? 'PM' : 'AM';
-        const time12Str = `${pad2(h12)}:${pad2(min)}:${pad2(sec)} ${ampm}`;
-        time12helper.textContent = `⏱ 12h · ${time12Str}`;
+        time12helper.textContent = `⏱ 12h · ${pad2(h12)}:${pad2(min)}:${pad2(sec)} ${ampm}`;
+
+        // ---- sunset duration ----
+        const sunset = getSunsetDuration(now);
+        const hh = String(sunset.hours).padStart(2, '0');
+        const mm = String(sunset.minutes).padStart(2, '0');
+        sunsetDurationEl.textContent = `${hh}:${mm}`;
+        const totalDaylight = sunset.dayLength.toFixed(1);
+        sunsetSubEl.textContent = `${totalDaylight}h daylight`;
+
+        // ---- day progress ----
+        const startOfDay = new Date(now);
+        startOfDay.setHours(0, 0, 0, 0);
+        const endOfDay = new Date(now);
+        endOfDay.setHours(23, 59, 59, 999);
+        const dayElapsed = now.getTime() - startOfDay.getTime();
+        const dayTotal = endOfDay.getTime() - startOfDay.getTime();
+        const dayPct = Math.min(100, (dayElapsed / dayTotal) * 100);
+        dayPercentEl.textContent = `${Math.round(dayPct)}%`;
+        dayFillEl.style.width = `${dayPct}%`;
+
+        // ---- week progress (Monday = 0) ----
+        const dayOfWeek = now.getDay(); // 0=Sunday
+        const mondayOffset = (dayOfWeek === 0) ? 6 : dayOfWeek - 1; // days since Monday
+        const startOfWeek = new Date(now);
+        startOfWeek.setDate(now.getDate() - mondayOffset);
+        startOfWeek.setHours(0, 0, 0, 0);
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 7);
+        endOfWeek.setHours(0, 0, 0, 0);
+        const weekElapsed = now.getTime() - startOfWeek.getTime();
+        const weekTotal = endOfWeek.getTime() - startOfWeek.getTime();
+        let weekPct = Math.min(100, (weekElapsed / weekTotal) * 100);
+        weekPct = Math.min(100, weekPct);
+        weekPercentEl.textContent = `${Math.round(weekPct)}%`;
+        weekFillEl.style.width = `${weekPct}%`;
+
+        // ---- moon phase ----
+        const moon = getMoonInfo(now);
+        moonIconEl.textContent = moon.icon;
+        moonPhaseNameEl.textContent = moon.name;
+        moonIlluminationEl.textContent = `${moon.illumination}% illuminated`;
       }
 
-      // ---- init ----
-      updateDateTime();
-      setInterval(updateDateTime, 1000);
+      // initial + interval
+      updateAll();
+      setInterval(updateAll, 1000);
+
+      // re-run on visibility change to keep fresh
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) {
+          updateAll();
+        }
+      });
 
     })();
   </script>
